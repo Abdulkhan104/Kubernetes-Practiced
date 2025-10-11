@@ -1,0 +1,14 @@
+Clustor Autoscale
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/cluster-autoscaler-1.29.0/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+kubectl -n kube-system get pods -l app=cluster-autoscaler
+
+kubectl -n kube-system edit deployment.apps/cluster-autoscaler
+
+attach in worker node adminacces othwise cant be autoscle
+
+aws eks update-nodegroup-config \
+  --cluster-name abdul \                                                    ##########chnge the your cluser name here
+  --nodegroup-name ng-4899a1d4 \                                   ##########chnge the your node name here
+  --scaling-config minSize=2,maxSize=6,desiredSize=3
