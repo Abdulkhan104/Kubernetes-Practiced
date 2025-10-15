@@ -1,0 +1,17 @@
+i want to create my small E-com application with cart 
+services like is 
+1) mobile&tablets 
+2)Tv&Applications
+3)Electronics 
+4)Fashion
+5)Home&Furniture
+6)Beuty&toys
+and one home page 
+
+this service only simple html css js pages not backend and all 
+i want HTML CSS JS 
+I want Seprate file seprate Dockerfile 
+i want ingress.yml
+i want ingress-with-host.yml
+
+in home page i want to see all microservices used nginx for that 
