@@ -1,0 +1,25 @@
+# Save as docker-buildconfig.yml
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: nodejs-build
+spec:
+  source:
+    type: Git
+    git:
+      uri: "https://github.com/Abdulkhan104/Hotstar-DevOps-Project-NodeJS-main.git"
+      ref: "main"
+    contextDir: "."
+  strategy:
+    type: Docker
+    dockerStrategy:
+      from:
+        kind: DockerImage
+        name: "node:18-alpine"  # Use official Node.js image
+      dockerfilePath: "Dockerfile"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: "hotstar-clone:latest"
+  triggers:
+  - type: ConfigChange

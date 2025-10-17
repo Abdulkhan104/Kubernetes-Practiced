@@ -1,0 +1,32 @@
+# Save as fixed-buildconfig.yml
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: nodejs-build
+  labels:
+    app: hotstar-clone
+spec:
+  source:
+    type: Git
+    git:
+      uri: "https://github.com/Abdulkhan104/Hotstar-DevOps-Project-NodeJS-main.git"
+      ref: "main"
+    contextDir: "."
+  strategy:
+    type: Source  # Use S2I instead of Docker for simplicity
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: "nodejs:18-el8"  # Now available after import
+      env:
+      - name: NPM_FLAGS
+        value: "ci --production"
+      - name: NODE_ENV
+        value: "production"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: "hotstar-clone:latest"
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange

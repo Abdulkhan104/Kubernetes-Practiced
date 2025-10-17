@@ -1,0 +1,56 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: hotstar-cicd-pipeline
+  namespace: hotstar-devops
+spec:
+  workspaces:
+  - name: shared-workspace
+  tasks:
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-workspace
+    params:
+    - name: url
+      value: https://github.com/your-username/hotstar-devops-project.git
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+  - name: security-scan
+    taskRef:
+      name: trivy-scan
+    runAfter:
+    - fetch-repository
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: IMAGE
+      value: image-registry.openshift-image-registry.svc:50000/hotstar-devops/hotstar-clone
+  - name: build-image
+    taskRef:
+      name: buildah
+    runAfter:
+    - security-scan
+    workspaces:
+    - name: source
+      workspace: shared-workspace
+    params:
+    - name: TLSVERIFY
+      value: "false"
+    - name: IMAGE
+      value: image-registry.openshift-image-registry.svc:50000/hotstar-devops/hotstar-clone:$(tasks.build-image/results.image-id)
+  - name: deploy-to-openshift
+    taskRef:
+      name: openshift-client
+    runAfter:
+    - build-image
+    params:
+    - name: SCRIPT
+      value: |
+        oc rollout latest dc/hotstar-deployment
+        oc rollout status dc/hotstar-deployment

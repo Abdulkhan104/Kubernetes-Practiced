@@ -1,0 +1,44 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: nodejs-build
+  labels:
+    app: hotstar-clone
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/Abdulkhan104/Hotstar-DevOps-Project-NodeJS-main.git  # Update to your repo
+      ref: main
+    contextDir: .  # Root of repo
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nodejs:18-el8  # OpenShift Node.js 18 builder
+      env:
+      - name: NPM_FLAGS
+        value: "ci --only=production"
+      - name: HTTPD_MAX_REQUESTS_PER_CHILD  # For serving static React build
+        value: "0"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: hotstar-clone:latest
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+  completionDeadlineSeconds: 1800
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: hotstar-clone
